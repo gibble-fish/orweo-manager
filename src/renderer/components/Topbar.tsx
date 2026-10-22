@@ -38,15 +38,15 @@ export function Topbar() {
     >
       <div className="relative w-full max-w-md">
         <IconSearch
-          width={20}
-          height={20}
-          className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2"
+          width={18}
+          height={18}
+          className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2"
           style={{ color: "var(--app-text-muted)" }}
         />
         <input
           type="search"
           placeholder="Suche: Kunden, Projekte, Angebote, Rechnungen …"
-          className="w-full rounded-lg border bg-transparent py-3 pl-11 pr-3 text-base outline-none transition-colors focus:border-[color:var(--color-champagne)]"
+          className="w-full rounded-lg border bg-transparent py-3 pl-12 pr-3 text-base outline-none transition-colors focus:border-[color:var(--color-champagne)]"
           style={{ borderColor: "var(--app-border)", color: "var(--app-text)" }}
         />
       </div>

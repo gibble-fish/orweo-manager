@@ -185,31 +185,33 @@ export function Inquiries() {
                   </div>
                 </td>
                 <td className="px-4 py-3 text-right whitespace-nowrap">
-                  <button
-                    type="button"
-                    onClick={() => convert(q)}
-                    className="mr-3 text-xs underline-offset-2 hover:underline"
-                    style={{ color: "var(--color-champagne)" }}
-                    title="Aus dieser Anfrage einen Kunden erzeugen oder verknüpfen"
-                  >
-                    Kunde übernehmen
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => openEdit(q)}
-                    className="mr-3 text-xs underline-offset-2 hover:underline"
-                    style={{ color: "var(--app-text)" }}
-                  >
-                    Bearbeiten
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => remove(q)}
-                    className="text-xs underline-offset-2 hover:underline"
-                    style={{ color: "#B87A7A" }}
-                  >
-                    Löschen
-                  </button>
+                  <div className="flex items-center justify-end gap-5">
+                    <button
+                      type="button"
+                      onClick={() => convert(q)}
+                      className="text-sm underline-offset-2 hover:underline"
+                      style={{ color: "var(--color-champagne)" }}
+                      title="Aus dieser Anfrage einen Kunden erzeugen oder verknüpfen"
+                    >
+                      Kunde übernehmen
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => openEdit(q)}
+                      className="text-sm underline-offset-2 hover:underline"
+                      style={{ color: "var(--app-text)" }}
+                    >
+                      Bearbeiten
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => remove(q)}
+                      className="text-sm underline-offset-2 hover:underline"
+                      style={{ color: "#B87A7A" }}
+                    >
+                      Löschen
+                    </button>
+                  </div>
                 </td>
               </tr>
             ))}

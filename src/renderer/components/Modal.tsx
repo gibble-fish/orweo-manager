@@ -10,12 +10,15 @@ export function Modal({
   onClose,
   children,
   footer,
+  maxWidthClass = "max-w-lg",
 }: {
   open: boolean;
   title: string;
   onClose: () => void;
   children: ReactNode;
   footer?: ReactNode;
+  /** Tailwind-Klasse für die maximale Breite (Standard: max-w-lg). */
+  maxWidthClass?: string;
 }) {
   useEffect(() => {
     if (!open) return;
@@ -37,7 +40,7 @@ export function Modal({
       }}
     >
       <div
-        className="glass-card w-full max-w-lg rounded-xl animate-scale-in"
+        className={`glass-card w-full ${maxWidthClass} rounded-xl animate-scale-in`}
         style={{ background: "var(--app-card)", borderColor: "var(--app-border)" }}
       >
         <div

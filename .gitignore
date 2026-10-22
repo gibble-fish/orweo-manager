@@ -9,3 +9,7 @@ release/
 *.sqlite
 *.sqlite-shm
 *.sqlite-wal
+
+# Lokale Geheimnisse (z. B. GitHub-Token fürs Release) – NIE committen
+.env.release
+*.secret

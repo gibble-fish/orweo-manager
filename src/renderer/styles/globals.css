@@ -87,6 +87,27 @@ h3 {
   font-weight: 500;
 }
 
+/*
+ * Dropdown-Lesbarkeit: Die App nutzt viele <select>-Menüs mit transparentem
+ * Hintergrund. Die aufgeklappte Optionsliste übernahm sonst System­farben
+ * (heller Text auf hellem Grund → unlesbar). Wir setzen für die Optionen eine
+ * feste, kontrastreiche Farbgebung – getrennt für dunkles und helles Theme.
+ */
+select option {
+  background-color: #161618;
+  color: #f3f3f0;
+}
+[data-theme="light"] select option {
+  background-color: #ffffff;
+  color: #0b0b0d;
+}
+/* Markierte/gehoverte Option deutlich in Champagne statt System-Blau. */
+select option:checked,
+select option:hover {
+  background-color: var(--color-champagne);
+  color: #0b0b0d;
+}
+
 /* Theme-Umschaltung: dunkel (Standard) / hell.
    Steuert app-weite Flächen- und Textfarben über CSS-Variablen. */
 :root,

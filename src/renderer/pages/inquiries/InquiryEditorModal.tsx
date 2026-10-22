@@ -33,7 +33,7 @@ const emptyDraft = (): InquiryInput => ({
 
 const labelStyle = { color: "var(--app-text-muted)" };
 const inputClass =
-  "w-full rounded-lg border bg-transparent px-3 py-2 text-sm outline-none focus:border-[color:var(--color-champagne)]";
+  "w-full rounded-lg border bg-transparent px-3 py-2.5 text-base outline-none focus:border-[color:var(--color-champagne)]";
 const inputStyle = { borderColor: "var(--app-border)", color: "var(--app-text)" };
 
 /**
@@ -107,6 +107,7 @@ export function InquiryEditorModal({ open, inquiry, statuses, onClose, onSaved }
       open={open}
       title={inquiry ? "Anfrage bearbeiten" : "Neue Anfrage"}
       onClose={onClose}
+      maxWidthClass="max-w-2xl"
       footer={
         <>
           <button type="button" className="btn-secondary" onClick={onClose} disabled={saving}>
@@ -118,10 +119,10 @@ export function InquiryEditorModal({ open, inquiry, statuses, onClose, onSaved }
         </>
       }
     >
-      <div className="grid max-h-[60vh] gap-4 overflow-y-auto pr-1">
+      <div className="grid max-h-[72vh] gap-4 overflow-y-auto pr-1">
         <div className="grid grid-cols-2 gap-4">
           <label className="block">
-            <span className="mb-1 block text-xs uppercase tracking-wider" style={labelStyle}>
+            <span className="mb-1 block text-sm uppercase tracking-wider" style={labelStyle}>
               Name *
             </span>
             <input
@@ -134,7 +135,7 @@ export function InquiryEditorModal({ open, inquiry, statuses, onClose, onSaved }
             />
           </label>
           <label className="block">
-            <span className="mb-1 block text-xs uppercase tracking-wider" style={labelStyle}>
+            <span className="mb-1 block text-sm uppercase tracking-wider" style={labelStyle}>
               Firma
             </span>
             <input
@@ -149,7 +150,7 @@ export function InquiryEditorModal({ open, inquiry, statuses, onClose, onSaved }
 
         <div className="grid grid-cols-2 gap-4">
           <label className="block">
-            <span className="mb-1 block text-xs uppercase tracking-wider" style={labelStyle}>
+            <span className="mb-1 block text-sm uppercase tracking-wider" style={labelStyle}>
               E-Mail
             </span>
             <input
@@ -161,7 +162,7 @@ export function InquiryEditorModal({ open, inquiry, statuses, onClose, onSaved }
             />
           </label>
           <label className="block">
-            <span className="mb-1 block text-xs uppercase tracking-wider" style={labelStyle}>
+            <span className="mb-1 block text-sm uppercase tracking-wider" style={labelStyle}>
               Telefon
             </span>
             <input
@@ -176,7 +177,7 @@ export function InquiryEditorModal({ open, inquiry, statuses, onClose, onSaved }
 
         <div className="grid grid-cols-2 gap-4">
           <label className="block">
-            <span className="mb-1 block text-xs uppercase tracking-wider" style={labelStyle}>
+            <span className="mb-1 block text-sm uppercase tracking-wider" style={labelStyle}>
               Projektart
             </span>
             <select
@@ -196,7 +197,7 @@ export function InquiryEditorModal({ open, inquiry, statuses, onClose, onSaved }
             </select>
           </label>
           <label className="block">
-            <span className="mb-1 block text-xs uppercase tracking-wider" style={labelStyle}>
+            <span className="mb-1 block text-sm uppercase tracking-wider" style={labelStyle}>
               Status
             </span>
             <select
@@ -216,7 +217,7 @@ export function InquiryEditorModal({ open, inquiry, statuses, onClose, onSaved }
 
         <div className="grid grid-cols-2 gap-4">
           <label className="block">
-            <span className="mb-1 block text-xs uppercase tracking-wider" style={labelStyle}>
+            <span className="mb-1 block text-sm uppercase tracking-wider" style={labelStyle}>
               Standort
             </span>
             <input
@@ -228,7 +229,7 @@ export function InquiryEditorModal({ open, inquiry, statuses, onClose, onSaved }
             />
           </label>
           <label className="block">
-            <span className="mb-1 block text-xs uppercase tracking-wider" style={labelStyle}>
+            <span className="mb-1 block text-sm uppercase tracking-wider" style={labelStyle}>
               Gewünschter Zeitraum
             </span>
             <input
@@ -246,11 +247,11 @@ export function InquiryEditorModal({ open, inquiry, statuses, onClose, onSaved }
             Nachricht
           </span>
           <textarea
-            rows={4}
+            rows={8}
             value={draft.message ?? ""}
             onChange={(e) => set({ message: e.target.value })}
             className={inputClass}
-            style={inputStyle}
+            style={{ ...inputStyle, minHeight: "180px", resize: "vertical" }}
           />
         </label>
 
