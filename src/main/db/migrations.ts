@@ -234,6 +234,60 @@ const MIGRATIONS: Migration[] = [
       `);
     },
   },
+  {
+    // Trägt beschreibende Texte in die vordefinierten Pakete nach – aber NUR bei
+    // Paketen, die noch keine eigene Beschreibung haben (bzw. nur einen kurzen
+    // Preis-Platzhalter wie „ab 999 €"). So bleiben eigene Anpassungen erhalten.
+    // Die Texte entsprechen dem Seed (Variante 1: Paket = eine Position mit Text).
+    version: 3,
+    up: (db) => {
+      const DESCRIPTIONS: Record<string, string> = {
+        "Architektur Basic":
+          "Architektur-Fotografie (Basic) inkl. 10 professionell bearbeiteter Fotos. Inkl. Bildbearbeitung, Farbkorrektur und digitaler Lieferung.",
+        "Architektur Standard":
+          "Architektur-Fotografie (Standard) inkl. 20 bearbeiteter Fotos. Inkl. Bildbearbeitung, Farbkorrektur und digitaler Lieferung.",
+        "Architektur Premium":
+          "Architektur-Fotografie (Premium) inkl. 30+ bearbeiteter Fotos und Luftbild (Premium). Inkl. vollständiger Bildbearbeitung und digitaler Lieferung.",
+        "Architektur Production":
+          "Individuelle Architektur-Produktion nach Absprache (Umfang projektabhängig). Ab 990 €.",
+        "Immobilien Basic":
+          "Außenaufnahmen inkl. 10 professionell bearbeiteter Fotos (Bildbearbeitung, Farbkorrektur, digitale Lieferung).",
+        "Immobilien Standard":
+          "Außen- und Innenaufnahmen inkl. 20 bearbeiteter Fotos sowie einem Luftbild (Standard). Inkl. Bildbearbeitung, Farbkorrektur und digitaler Lieferung.",
+        "Immobilien Premium":
+          "Außen- und Innenaufnahmen inkl. 30+ bearbeiteter Fotos, Luftbild (Premium), Top-Down-Aufnahme und 5-Sekunden-Reel. Inkl. vollständiger Bildbearbeitung und digitaler Lieferung.",
+        "Automotive Basic":
+          "Automotive-Fotografie (Basic) inkl. bearbeiteter Fotos und einem kurzen Video. Inkl. Bildbearbeitung, Color Grading und digitaler Lieferung.",
+        "Automotive Cinematic":
+          "Cinematic-Fotografie und Cinematic-Video. Inkl. Bildbearbeitung, Color Grading und digitaler Lieferung.",
+        "Automotive Neon":
+          "Neon-Fotografie und Neon-Video mit aufwendiger Lichtsetzung. Inkl. Bildbearbeitung, Color Grading und digitaler Lieferung.",
+        "Automotive Ultimate":
+          "Umfassende Foto- und Videoproduktion nach Absprache (Umfang projektabhängig). Ab 999 €.",
+        "Action Starter":
+          "Sport-Fotografie (Starter) inkl. bearbeiteter Fotos und einem kurzen Action-Video. Inkl. Bildbearbeitung und digitaler Lieferung.",
+        "Action Plus":
+          "Sport-Fotografie (Plus) inkl. bearbeiteter Fotos und einem Action-Video. Inkl. Bildbearbeitung und digitaler Lieferung.",
+        "Action Day":
+          "Ganztägige Foto- und Videoproduktion nach Absprache (Umfang projektabhängig). Ab 699 €.",
+        "Luftbild Basic": "Luftaufnahmen (Basic) inkl. bearbeiteter Fotos und digitaler Lieferung.",
+        "Luftbild Standard":
+          "Luftaufnahmen (Standard) inkl. erweiterter Auswahl bearbeiteter Fotos und digitaler Lieferung.",
+        "Luftbild Premium":
+          "Luftaufnahmen (Premium) inkl. umfangreicher Bildauswahl, Top-Down-Aufnahmen und digitaler Lieferung.",
+        "Außenpanorama":
+          "360°-Außenpanorama als Datei-Lieferung (kein Hosting, kein Link, keine Web-Einbindung).",
+      };
+      const upd = db.prepare(
+        `UPDATE packages SET description = @desc
+         WHERE name = @name
+           AND (description IS NULL OR TRIM(description) = '' OR description LIKE 'ab %')`,
+      );
+      for (const [name, desc] of Object.entries(DESCRIPTIONS)) {
+        upd.run({ name, desc });
+      }
+    },
+  },
 ];
 
 /** Höchste im Code bekannte Schemaversion. */

@@ -42,6 +42,8 @@ export function ProjectDetail() {
   const [settings, setSettings] = useState<AppSettings | null>(null);
   const [editorOpen, setEditorOpen] = useState(false);
   const [dirty, setDirty] = useState(false);
+  // Sperre, damit schnelle Doppelklicks auf eine Paket-Kachel nicht mehrfach anhängen.
+  const [addingPackage, setAddingPackage] = useState(false);
 
   const loadProject = useCallback(() => {
     window.orweo.projects
@@ -93,8 +95,26 @@ export function ProjectDetail() {
   };
 
   const applyPackage = async (pkg: Package) => {
-    const saved = await window.orweo.projects.addPackage(projectId, pkg.id);
-    setItems(saved);
+    // Sofort-Sperre gegen schnelle Doppelklicks (State-Updates sind asynchron).
+    if (addingPackage) return;
+    // Dubletten-Schutz: Ein Paket wird höchstens einmal hinzugefügt. Die
+    // Sammelposition heißt „Paket: <Name>" – ist sie schon vorhanden, ignorieren
+    // wir weitere Klicks (verhindert versehentliches mehrfaches Einfügen).
+    const alreadyAdded = items.some((it) => it.label === pkg.name);
+    if (alreadyAdded) {
+      window.alert(
+        `„${pkg.name}" ist bereits im Auftrag enthalten. ` +
+          `Zusätzliche Leistungen kannst du über „Freie Position" oder „Katalog-Leistung" hinzufügen.`,
+      );
+      return;
+    }
+    setAddingPackage(true);
+    try {
+      const saved = await window.orweo.projects.addPackage(projectId, pkg.id);
+      setItems(saved);
+    } finally {
+      setAddingPackage(false);
+    }
   };
 
   const createQuote = async () => {
@@ -155,6 +175,16 @@ export function ProjectDetail() {
     setDirty(true);
   };
 
+  // Alle Positionen auf einmal entfernen (z. B. um versehentliche Dubletten
+  // zurückzusetzen und das Projekt sauber neu zu bestücken).
+  const clearItems = async () => {
+    if (items.length === 0) return;
+    if (!window.confirm("Wirklich alle Positionen entfernen? Das kann nicht rückgängig gemacht werden.")) {
+      return;
+    }
+    await persist([]);
+  };
+
   if (!project) {
     return (
       <div className="animate-fade-in-up">
@@ -211,17 +241,25 @@ export function ProjectDetail() {
           Pakete für {categoryLabel(project.category)}
         </h2>
         <div className="grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-4">
-          {packagesForCategory.map((pkg) => (
-            <GlassCard key={pkg.id} onClick={() => applyPackage(pkg)} className="p-4">
-              <div className="text-sm font-medium">{pkg.name}</div>
-              <div className="mt-2 text-lg font-light" style={{ color: "var(--color-champagne)" }}>
-                {euro(pkg.price)}
-              </div>
-              <div className="mt-2 text-xs" style={{ color: "var(--app-text-muted)" }}>
-                Klicken zum Hinzufügen
-              </div>
-            </GlassCard>
-          ))}
+          {packagesForCategory.map((pkg) => {
+            const added = items.some((it) => it.label === pkg.name);
+            return (
+              <GlassCard
+                key={pkg.id}
+                onClick={() => !added && !addingPackage && applyPackage(pkg)}
+                className="p-4"
+                style={{ opacity: added ? 0.55 : 1, cursor: added ? "default" : "pointer" }}
+              >
+                <div className="text-sm font-medium">{pkg.name}</div>
+                <div className="mt-2 text-lg font-light" style={{ color: "var(--color-champagne)" }}>
+                  {euro(pkg.price)}
+                </div>
+                <div className="mt-2 text-xs" style={{ color: "var(--app-text-muted)" }}>
+                  {added ? "✓ Bereits hinzugefügt" : "Klicken zum Hinzufügen"}
+                </div>
+              </GlassCard>
+            );
+          })}
           {packagesForCategory.length === 0 && (
             <p className="text-xs" style={{ color: "var(--app-text-muted)" }}>
               Keine Pakete für diese Projektart. Du kannst Positionen manuell hinzufügen.
@@ -236,11 +274,23 @@ export function ProjectDetail() {
           <h2 className="text-sm uppercase tracking-[0.2em]" style={{ color: "var(--app-text-muted)" }}>
             Positionen
           </h2>
-          {dirty && (
-            <button type="button" className="btn-primary !py-2 !px-4 text-xs" onClick={() => persist(items)}>
-              Änderungen speichern
-            </button>
-          )}
+          <div className="flex items-center gap-2">
+            {items.length > 0 && (
+              <button
+                type="button"
+                className="btn-secondary !py-2 !px-4 text-xs"
+                onClick={clearItems}
+                title="Alle Positionen entfernen"
+              >
+                Alle Positionen leeren
+              </button>
+            )}
+            {dirty && (
+              <button type="button" className="btn-primary !py-2 !px-4 text-xs" onClick={() => persist(items)}>
+                Änderungen speichern
+              </button>
+            )}
+          </div>
         </div>
 
         <GlassCard className="overflow-hidden">
@@ -276,6 +326,14 @@ export function ProjectDetail() {
                       onChange={(e) => patchItem(index, { label: e.target.value })}
                       className="w-full rounded border bg-transparent px-2 py-1 text-sm outline-none focus:border-[color:var(--color-champagne)]"
                       style={inputStyle}
+                    />
+                    <input
+                      type="text"
+                      value={it.description ?? ""}
+                      onChange={(e) => patchItem(index, { description: e.target.value || null })}
+                      placeholder="Beschreibung (optional) – erscheint im Angebot/der Rechnung"
+                      className="mt-1 w-full rounded border bg-transparent px-2 py-1 text-xs outline-none focus:border-[color:var(--color-champagne)]"
+                      style={{ ...inputStyle, color: "var(--app-text-muted)" }}
                     />
                   </td>
                   <td className="px-3 py-2 text-right">

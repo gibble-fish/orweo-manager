@@ -68,6 +68,7 @@ const api: OrweoApi = {
     setStatus: (id, status) => ipcRenderer.invoke(IPC_CHANNELS.inquiries.setStatus, id, status),
     convertToCustomer: (id) =>
       ipcRenderer.invoke(IPC_CHANNELS.inquiries.convertToCustomer, id),
+    createProject: (id) => ipcRenderer.invoke(IPC_CHANNELS.inquiries.createProject, id),
   },
   projects: {
     list: (search, status) => ipcRenderer.invoke(IPC_CHANNELS.projects.list, search, status),
@@ -115,6 +116,7 @@ const api: OrweoApi = {
   },
   pdf: {
     save: (input) => ipcRenderer.invoke(IPC_CHANNELS.pdf.save, input),
+    saveAuto: (input) => ipcRenderer.invoke(IPC_CHANNELS.pdf.saveAuto, input),
   },
   status: {
     list: () => ipcRenderer.invoke(IPC_CHANNELS.status.list),

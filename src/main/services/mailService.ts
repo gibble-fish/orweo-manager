@@ -241,13 +241,29 @@ export async function checkMailbox(): Promise<MailCheckResult> {
         const bodyText = parsed.text ?? "";
         const fields = parseBody(bodyText);
 
-        const name = fields.name ?? extractName(fromHeader) ?? senderEmail ?? "Unbekannt";
+        // Das ORWEO-Kontaktformular liefert „Name" (Vorname) und „Unternehmen"
+        // (in der Praxis der Nachname) getrennt. Beide zu einem vollständigen
+        // Namen zusammenführen, z. B. „Marvin Hinz". Enthält das Unternehmen-Feld
+        // Hinweise auf eine echte Firma (GmbH, UG, AG, e.K. …), wird es NICHT als
+        // Nachname gewertet, sondern bleibt als Firma erhalten.
+        const looksLikeCompany = (v: string | null): boolean =>
+          !!v && /\b(gmbh|ug|ag|kg|ohg|e\.?k\.?|mbh|gbr|ltd|inc|e\.?v\.?)\b/i.test(v);
+
+        const rawName = fields.name ?? extractName(fromHeader) ?? senderEmail ?? "Unbekannt";
+        let name = rawName;
+        let company = fields.company;
+        if (fields.company && !looksLikeCompany(fields.company)) {
+          // „Unternehmen" ist hier der Nachname → an den Namen anhängen, Firma leeren.
+          name = `${rawName} ${fields.company}`.trim();
+          company = null;
+        }
+
         const email = fields.email ?? senderEmail;
 
         const input: InquiryInput = {
           customerId: null,
           name,
-          company: fields.company,
+          company,
           email,
           phone: fields.phone,
           category: mapCategory(fields.category),

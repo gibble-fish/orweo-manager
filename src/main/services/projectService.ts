@@ -155,28 +155,25 @@ export function setProjectItems(projectId: number, items: ProjectItemInput[]): P
 export function addPackageToProject(projectId: number, packageId: number): ProjectItem[] {
   const db = getDb();
   const pkg = db.prepare("SELECT * FROM packages WHERE id = ?").get(packageId) as
-    | { id: number; name: string; price: number }
+    | { id: number; name: string; price: number; description: string | null }
     | undefined;
   if (!pkg) throw new Error(`Paket ${packageId} nicht gefunden.`);
 
+  // Variante 1: Ein Paket wird als EINE Position mit Preis und beschreibendem
+  // Text angelegt (keine 0-€-Unterzeilen). Fehlt eine hinterlegte Beschreibung,
+  // werden die enthaltenen Leistungen als Text zusammengefasst.
   const pkgItems = listPackageItems(packageId).filter((i) => i.active);
+  const fallback = pkgItems.map((i) => i.label).join(" · ");
+  const description = pkg.description && pkg.description.trim() ? pkg.description : fallback || null;
 
   const existing = listProjectItems(projectId);
-  let sort = existing.length;
+  const sort = existing.length;
 
-  const tx = db.transaction(() => {
-    const ins = db.prepare(
-      `INSERT INTO project_items
-         (projectId, serviceId, label, description, quantity, unitPrice, taxRate, active, sortOrder)
-       VALUES (?, ?, ?, ?, ?, ?, ?, 1, ?)`,
-    );
-    // Paketpreis als Sammelposition.
-    ins.run(projectId, null, `Paket: ${pkg.name}`, null, 1, pkg.price, 0, sort++);
-    // Enthaltene Leistungen als 0-€-Inhaltspositionen (Preis steckt im Paket).
-    for (const item of pkgItems) {
-      ins.run(projectId, item.serviceId, item.label, null, item.quantity, 0, 0, sort++);
-    }
-  });
-  tx();
+  db.prepare(
+    `INSERT INTO project_items
+       (projectId, serviceId, label, description, quantity, unitPrice, taxRate, active, sortOrder)
+     VALUES (?, ?, ?, ?, ?, ?, ?, 1, ?)`,
+  ).run(projectId, null, pkg.name, description, 1, pkg.price, 0, sort);
+
   return listProjectItems(projectId);
 }

@@ -120,18 +120,24 @@ const PACKAGES: SeedPackage[] = [
     name: "Architektur Basic",
     category: "architektur",
     price: 299,
+    description:
+      "Architektur-Fotografie (Basic) inkl. 10 professionell bearbeiteter Fotos. Inkl. Bildbearbeitung, Farbkorrektur und digitaler Lieferung.",
     items: [{ label: "Architektur-Fotografie Basic" }, { label: "10 bearbeitete Fotos" }],
   },
   {
     name: "Architektur Standard",
     category: "architektur",
     price: 499,
+    description:
+      "Architektur-Fotografie (Standard) inkl. 20 bearbeiteter Fotos. Inkl. Bildbearbeitung, Farbkorrektur und digitaler Lieferung.",
     items: [{ label: "Architektur-Fotografie Standard" }, { label: "20 bearbeitete Fotos" }],
   },
   {
     name: "Architektur Premium",
     category: "architektur",
     price: 749,
+    description:
+      "Architektur-Fotografie (Premium) inkl. 30+ bearbeiteter Fotos und Luftbild (Premium). Inkl. vollständiger Bildbearbeitung und digitaler Lieferung.",
     items: [
       { label: "Architektur-Fotografie Premium" },
       { label: "30+ bearbeitete Fotos" },
@@ -142,7 +148,8 @@ const PACKAGES: SeedPackage[] = [
     name: "Architektur Production",
     category: "architektur",
     price: 990,
-    description: "ab 990 €",
+    description:
+      "Individuelle Architektur-Produktion nach Absprache (Umfang projektabhängig). Ab 990 €.",
     items: [{ label: "Individuelle Produktion" }],
   },
 
@@ -151,12 +158,16 @@ const PACKAGES: SeedPackage[] = [
     name: "Immobilien Basic",
     category: "immobilien",
     price: 249,
+    description:
+      "Außenaufnahmen inkl. 10 professionell bearbeiteter Fotos (Bildbearbeitung, Farbkorrektur, digitale Lieferung).",
     items: [{ label: "Außenaufnahmen" }, { label: "10 bearbeitete Fotos" }],
   },
   {
     name: "Immobilien Standard",
     category: "immobilien",
     price: 399,
+    description:
+      "Außen- und Innenaufnahmen inkl. 20 bearbeiteter Fotos sowie einem Luftbild (Standard). Inkl. Bildbearbeitung, Farbkorrektur und digitaler Lieferung.",
     items: [
       { label: "Außen- und Innenaufnahmen" },
       { label: "20 bearbeitete Fotos" },
@@ -167,6 +178,8 @@ const PACKAGES: SeedPackage[] = [
     name: "Immobilien Premium",
     category: "immobilien",
     price: 549,
+    description:
+      "Außen- und Innenaufnahmen inkl. 30+ bearbeiteter Fotos, Luftbild (Premium), Top-Down-Aufnahme und 5-Sekunden-Reel. Inkl. vollständiger Bildbearbeitung und digitaler Lieferung.",
     items: [
       { label: "Außen- und Innenaufnahmen" },
       { label: "30+ bearbeitete Fotos" },
@@ -181,25 +194,32 @@ const PACKAGES: SeedPackage[] = [
     name: "Automotive Basic",
     category: "automotive",
     price: 299,
+    description:
+      "Automotive-Fotografie (Basic) inkl. bearbeiteter Fotos und einem kurzen Video. Inkl. Bildbearbeitung, Color Grading und digitaler Lieferung.",
     items: [{ label: "Automotive-Fotografie Basic" }, { label: "Kurzes Video" }],
   },
   {
     name: "Automotive Cinematic",
     category: "automotive",
     price: 499,
+    description:
+      "Cinematic-Fotografie und Cinematic-Video. Inkl. Bildbearbeitung, Color Grading und digitaler Lieferung.",
     items: [{ label: "Cinematic-Fotografie" }, { label: "Cinematic-Video" }],
   },
   {
     name: "Automotive Neon",
     category: "automotive",
     price: 699,
+    description:
+      "Neon-Fotografie und Neon-Video mit aufwendiger Lichtsetzung. Inkl. Bildbearbeitung, Color Grading und digitaler Lieferung.",
     items: [{ label: "Neon-Fotografie" }, { label: "Neon-Video" }],
   },
   {
     name: "Automotive Ultimate",
     category: "automotive",
     price: 999,
-    description: "ab 999 €",
+    description:
+      "Umfassende Foto- und Videoproduktion nach Absprache (Umfang projektabhängig). Ab 999 €.",
     items: [{ label: "Ultimate-Foto-/Videoproduktion" }],
   },
 
@@ -208,33 +228,57 @@ const PACKAGES: SeedPackage[] = [
     name: "Action Starter",
     category: "sport",
     price: 199,
+    description:
+      "Sport-Fotografie (Starter) inkl. bearbeiteter Fotos und einem kurzen Action-Video. Inkl. Bildbearbeitung und digitaler Lieferung.",
     items: [{ label: "Sport-Fotografie Starter" }, { label: "Kurzes Action-Video" }],
   },
   {
     name: "Action Plus",
     category: "sport",
     price: 349,
+    description:
+      "Sport-Fotografie (Plus) inkl. bearbeiteter Fotos und einem Action-Video. Inkl. Bildbearbeitung und digitaler Lieferung.",
     items: [{ label: "Sport-Fotografie Plus" }, { label: "Action-Video" }],
   },
   {
     name: "Action Day",
     category: "sport",
     price: 699,
-    description: "ab 699 €",
+    description:
+      "Ganztägige Foto- und Videoproduktion nach Absprache (Umfang projektabhängig). Ab 699 €.",
     items: [{ label: "Ganztägige Foto-/Videoproduktion" }],
   },
 
   // Luftaufnahmen (~50/50) – als Kachel-Pakete
-  { name: "Luftbild Basic", category: "luftaufnahmen", price: 99, items: [{ label: "Luftbild Basic" }] },
-  { name: "Luftbild Standard", category: "luftaufnahmen", price: 149, items: [{ label: "Luftbild Standard" }] },
-  { name: "Luftbild Premium", category: "luftaufnahmen", price: 199, items: [{ label: "Luftbild Premium" }] },
+  {
+    name: "Luftbild Basic",
+    category: "luftaufnahmen",
+    price: 99,
+    description: "Luftaufnahmen (Basic) inkl. bearbeiteter Fotos und digitaler Lieferung.",
+    items: [{ label: "Luftbild Basic" }],
+  },
+  {
+    name: "Luftbild Standard",
+    category: "luftaufnahmen",
+    price: 149,
+    description: "Luftaufnahmen (Standard) inkl. erweiterter Auswahl bearbeiteter Fotos und digitaler Lieferung.",
+    items: [{ label: "Luftbild Standard" }],
+  },
+  {
+    name: "Luftbild Premium",
+    category: "luftaufnahmen",
+    price: 199,
+    description: "Luftaufnahmen (Premium) inkl. umfangreicher Bildauswahl, Top-Down-Aufnahmen und digitaler Lieferung.",
+    items: [{ label: "Luftbild Premium" }],
+  },
 
   // 360° Panorama – nur Datei-Lieferung, KEIN Hosting/Link/Web-Einbindung
   {
     name: "Außenpanorama",
     category: "panorama360",
     price: 99,
-    description: "Nur Datei-Lieferung, kein Hosting/Link/Web-Einbindung",
+    description:
+      "360°-Außenpanorama als Datei-Lieferung (kein Hosting, kein Link, keine Web-Einbindung).",
     items: [{ label: "360°-Außenpanorama (Datei-Lieferung)" }],
   },
 ];

@@ -63,6 +63,7 @@ export const IPC_CHANNELS = {
     remove: "inquiries:remove",
     setStatus: "inquiries:setStatus",
     convertToCustomer: "inquiries:convertToCustomer",
+    createProject: "inquiries:createProject",
   },
   projects: {
     list: "projects:list",
@@ -103,6 +104,7 @@ export const IPC_CHANNELS = {
   },
   pdf: {
     save: "pdf:save",
+    saveAuto: "pdf:saveAuto",
   },
   status: {
     list: "status:list",
@@ -328,6 +330,21 @@ export interface PdfSaveInput {
 }
 
 /**
+ * Eingabe zum AUTOMATISCHEN Speichern eines PDFs in den konfigurierten
+ * Datenablage-Ordner – ohne Dialog. Die Datei landet im Unterordner `subDir`
+ * (z. B. "Angebote" oder "Rechnungen") unter dem Namen `fileName`. Bestehende
+ * Dateien werden überschrieben (immer aktueller Stand).
+ */
+export interface PdfAutoSaveInput {
+  /** Unterordner im Datenablageordner, z. B. "Angebote" oder "Rechnungen". */
+  subDir: string;
+  /** Dateiname inkl. Endung, z. B. "KD-2026-0001_AN-2026-0001.pdf". */
+  fileName: string;
+  /** PDF-Inhalt als Byte-Array. */
+  bytes: Uint8Array;
+}
+
+/**
  * Ergebnis der Kundenübernahme aus einer Anfrage.
  * linked = true: ein bestehender Kunde (gleiche E-Mail) wurde verknüpft;
  * linked = false: ein neuer Kunde wurde angelegt.
@@ -401,6 +418,8 @@ export interface OrweoApi {
     remove: (id: number) => Promise<void>;
     setStatus: (id: number, status: WorkflowStatus) => Promise<Inquiry>;
     convertToCustomer: (id: number) => Promise<ConvertResult>;
+    /** Legt aus der Anfrage direkt einen Auftrag (Projekt) an und gibt ihn zurück. */
+    createProject: (id: number) => Promise<Project>;
   };
   projects: {
     list: (search?: string, status?: WorkflowStatus) => Promise<ProjectListRow[]>;
@@ -442,6 +461,8 @@ export interface OrweoApi {
   pdf: {
     /** Speichert ein im Renderer erzeugtes PDF über einen Datei-Dialog. */
     save: (input: PdfSaveInput) => Promise<PdfResult>;
+    /** Speichert ein PDF automatisch in den konfigurierten Ablageordner (ohne Dialog). */
+    saveAuto: (input: PdfAutoSaveInput) => Promise<PdfResult>;
   };
   status: {
     list: () => Promise<StatusDefinition[]>;

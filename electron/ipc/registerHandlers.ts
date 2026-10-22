@@ -1,8 +1,8 @@
 import { app, dialog, ipcMain, BrowserWindow } from "electron";
-import { writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { IPC_CHANNELS } from "../../src/shared/ipc";
-import type { PdfResult, PdfSaveInput } from "../../src/shared/ipc";
+import type { PdfAutoSaveInput, PdfResult, PdfSaveInput } from "../../src/shared/ipc";
 import type { AppSettings } from "../../src/shared/domain";
 import { getSettings, updateSettings } from "../../src/main/services/settingsService";
 import {
@@ -44,6 +44,7 @@ import {
 import {
   convertInquiryToCustomer,
   createInquiry,
+  createProjectFromInquiry,
   listInquiries,
   removeInquiry,
   setInquiryStatus,
@@ -172,6 +173,7 @@ export function registerIpcHandlers(): void {
   handle(IPC_CHANNELS.inquiries.remove, removeInquiry);
   handle(IPC_CHANNELS.inquiries.setStatus, setInquiryStatus);
   handle(IPC_CHANNELS.inquiries.convertToCustomer, convertInquiryToCustomer);
+  handle(IPC_CHANNELS.inquiries.createProject, createProjectFromInquiry);
 
   handle(IPC_CHANNELS.projects.list, listProjects);
   handle(IPC_CHANNELS.projects.get, getProject);
@@ -221,6 +223,22 @@ export function registerIpcHandlers(): void {
     }
     writeFileSync(result.filePath, Buffer.from(input.bytes));
     return { path: result.filePath };
+  });
+
+  // Automatisches Speichern ohne Dialog: legt die Datei im konfigurierten
+  // Datenablage-Ordner unter dem Unterordner `subDir` (z. B. "Angebote" /
+  // "Rechnungen") ab. Unterordner werden bei Bedarf angelegt; bestehende
+  // Dateien werden überschrieben (immer aktueller Stand).
+  handle(IPC_CHANNELS.pdf.saveAuto, async (input: PdfAutoSaveInput): Promise<PdfResult> => {
+    const { dataRootPath } = getSettings();
+    const baseDir = dataRootPath && dataRootPath.trim() ? dataRootPath : app.getPath("documents");
+    const targetDir = join(baseDir, input.subDir);
+    if (!existsSync(targetDir)) {
+      mkdirSync(targetDir, { recursive: true });
+    }
+    const filePath = join(targetDir, input.fileName);
+    writeFileSync(filePath, Buffer.from(input.bytes));
+    return { path: filePath };
   });
 
   handle(IPC_CHANNELS.status.list, listStatuses);

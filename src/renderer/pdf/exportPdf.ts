@@ -12,18 +12,38 @@ async function loadCustomer(customerId: number): Promise<Customer | null> {
   }
 }
 
-/** Rendert ein Dokument zu PDF-Bytes und speichert es über den Main-Prozess. */
+/**
+ * Rendert ein Dokument zu PDF-Bytes und speichert es AUTOMATISCH im
+ * konfigurierten Datenablage-Ordner unter dem Unterordner `subDir`
+ * ("Angebote" / "Rechnungen"). Kein Dialog mehr.
+ */
 async function renderAndSave(
   props: DocumentPdfProps,
-  suggestedName: string,
+  subDir: string,
+  fileName: string,
 ): Promise<string | null> {
   // DocumentPdf rendert stets ein <Document> an der Wurzel; der Cast überbrückt
   // nur die Wrapper-Typisierung für die pdf()-Signatur (ReactElement<DocumentProps>).
   const element = createElement(DocumentPdf, props) as unknown as ReactElement<DocumentProps>;
   const blob = await pdf(element).toBlob();
   const bytes = new Uint8Array(await blob.arrayBuffer());
-  const res = await window.orweo.pdf.save({ suggestedName, bytes });
+  const res = await window.orweo.pdf.saveAuto({ subDir, fileName, bytes });
   return res.path;
+}
+
+/** Entfernt Zeichen, die in Windows-Dateinamen nicht erlaubt sind. */
+function safeName(value: string): string {
+  return value.replace(/[\\/:*?"<>|]/g, "-").trim();
+}
+
+/**
+ * Baut den Dateinamen aus Kundennummer und Belegnummer:
+ * z. B. "KD-2026-0001_AN-2026-0001.pdf". Fehlt die Kundennummer, wird nur die
+ * Belegnummer verwendet.
+ */
+function buildFileName(customer: Customer | null, documentNumber: string): string {
+  const customerPart = customer?.customerNumber ? `${safeName(customer.customerNumber)}_` : "";
+  return `${customerPart}${safeName(documentNumber)}.pdf`;
 }
 
 /** Erzeugt und speichert das PDF eines Angebots. Gibt den Dateipfad zurück (oder null). */
@@ -50,7 +70,8 @@ export async function exportQuotePdf(quoteId: number): Promise<string | null> {
       customer,
       settings,
     },
-    `Angebot_${quote.quoteNumber}.pdf`,
+    "Angebote",
+    buildFileName(customer, quote.quoteNumber),
   );
 }
 
@@ -78,6 +99,7 @@ export async function exportInvoicePdf(invoiceId: number): Promise<string | null
       customer,
       settings,
     },
-    `Rechnung_${invoice.invoiceNumber}.pdf`,
+    "Rechnungen",
+    buildFileName(customer, invoice.invoiceNumber),
   );
 }

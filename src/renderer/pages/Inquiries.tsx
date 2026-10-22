@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { PageHeader } from "../components/PageHeader";
 import { GlassCard } from "../components/GlassCard";
 import { StatusBadge } from "../components/StatusBadge";
@@ -27,6 +27,7 @@ const formatDate = (iso: string) => {
  * Struktur an – hier erfolgt die Erfassung manuell.
  */
 export function Inquiries() {
+  const navigate = useNavigate();
   const [inquiries, setInquiries] = useState<Inquiry[]>([]);
   const [statuses, setStatuses] = useState<StatusDefinition[]>([]);
   const [filter, setFilter] = useState<WorkflowStatus | "">("");
@@ -90,6 +91,26 @@ export function Inquiries() {
         : `Neuer Kunde angelegt: ${name} (${result.customer.customerNumber}).`,
     );
     load(filter);
+  };
+
+  // Aus der Anfrage direkt einen Auftrag (Projekt) erstellen und zur
+  // Projekt-Detailseite springen, um dort Leistungen/Angebot zu erfassen.
+  const createOrder = async (inquiry: Inquiry) => {
+    // Schutz: Ein Auftrag ist erst möglich, wenn der Kunde übernommen/verknüpft
+    // wurde (damit der Kunde sicher in der Datenbank steht).
+    if (!inquiry.customerId) {
+      window.alert('Bitte zuerst „Kunde übernehmen" drücken, bevor ein Auftrag angelegt wird.');
+      return;
+    }
+    try {
+      const project = await window.orweo.inquiries.createProject(inquiry.id);
+      navigate(`/projekte/${project.id}`);
+    } catch (e) {
+      window.alert(
+        "Auftrag konnte nicht angelegt werden: " +
+          (e instanceof Error ? e.message : "unbekannter Fehler"),
+      );
+    }
   };
 
   return (
@@ -188,9 +209,35 @@ export function Inquiries() {
                   <div className="flex items-center justify-end gap-5">
                     <button
                       type="button"
+                      onClick={() => openEdit(q)}
+                      className="text-sm underline-offset-2 hover:underline"
+                      style={{ color: "var(--app-text)" }}
+                      title="Anfrage ansehen: Nachricht und Details des Kunden anzeigen"
+                    >
+                      Anfrage ansehen
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => createOrder(q)}
+                      disabled={!q.customerId}
+                      className="text-sm underline-offset-2 enabled:hover:underline disabled:cursor-not-allowed"
+                      style={{
+                        color: q.customerId ? "var(--color-champagne)" : "var(--app-text-muted)",
+                        opacity: q.customerId ? 1 : 0.5,
+                      }}
+                      title={
+                        q.customerId
+                          ? "Aus dieser Anfrage einen Auftrag (Projekt) erstellen und zum Angebot übergehen"
+                          : "Bitte zuerst Kunde übernehmen drücken, dann ist das Anlegen eines Auftrags möglich."
+                      }
+                    >
+                      Auftrag anlegen
+                    </button>
+                    <button
+                      type="button"
                       onClick={() => convert(q)}
                       className="text-sm underline-offset-2 hover:underline"
-                      style={{ color: "var(--color-champagne)" }}
+                      style={{ color: "var(--app-text)" }}
                       title="Aus dieser Anfrage einen Kunden erzeugen oder verknüpfen"
                     >
                       Kunde übernehmen

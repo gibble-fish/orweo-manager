@@ -1,6 +1,7 @@
 import { getDb } from "../db/connection";
 import { createCustomer, findCustomerByEmail } from "./customerService";
-import type { Inquiry, WorkflowStatus } from "@shared/domain";
+import { createProject } from "./projectService";
+import type { Inquiry, Project, ProjectCategory, WorkflowStatus } from "@shared/domain";
 import type { ConvertResult, InquiryInput } from "@shared/ipc";
 
 /** Felder, die per Input gesetzt/aktualisiert werden dürfen. */
@@ -117,4 +118,81 @@ export function convertInquiryToCustomer(id: number): ConvertResult {
   ).run(customer.id, nextStatus, id);
 
   return { customer, linked };
+}
+
+/** Projektkategorie aus der Anfrage ableiten (Fallback: architektur). */
+function resolveCategory(inquiry: Inquiry): ProjectCategory {
+  const valid: ProjectCategory[] = [
+    "architektur",
+    "immobilien",
+    "automotive",
+    "sport",
+    "luftaufnahmen",
+    "panorama360",
+  ];
+  return inquiry.category && valid.includes(inquiry.category)
+    ? inquiry.category
+    : "architektur";
+}
+
+/**
+ * Erzeugt aus einer Anfrage in einem Schritt einen Auftrag (Projekt):
+ * 1. Kunde übernehmen oder verknüpfen (gleiche Logik wie convertInquiryToCustomer).
+ * 2. Projekt mit vorbefüllten Daten aus der Anfrage anlegen (Kunde, Projektart,
+ *    Standort, Name, Nachricht als Notiz).
+ * 3. Anfrage mit dem Kunden verknüpfen und Status auf „angebot_erstellt" setzen,
+ *    damit klar ist, dass sie weiterverarbeitet wurde.
+ *
+ * Gibt das angelegte Projekt zurück, damit der Renderer direkt dorthin springen kann.
+ */
+export function createProjectFromInquiry(id: number): Project {
+  const inquiry = getInquiryById(id);
+
+  const existing = inquiry.email ? findCustomerByEmail(inquiry.email) : null;
+  const customer =
+    existing ??
+    createCustomer({
+      company: inquiry.company,
+      firstName: null,
+      lastName: inquiry.name,
+      street: null,
+      zip: null,
+      city: inquiry.location,
+      email: inquiry.email,
+      phone: inquiry.phone,
+      website: null,
+      contactPerson: null,
+      notes: inquiry.message,
+      billingAddress: null,
+      shippingAddress: null,
+    });
+
+  // Vollständiger Name: Name und (falls vorhanden) Firma zusammen, damit nicht
+  // nur ein Teil wie „Hinz" erscheint. Beispiel: „Anfrage von Marvin Hinz".
+  const fullName = [inquiry.name, inquiry.company]
+    .map((v) => (v ?? "").trim())
+    .filter(Boolean)
+    .join(" ");
+  const projectName = `Anfrage von ${fullName || inquiry.name}`.trim();
+
+  const project = createProject({
+    customerId: customer.id,
+    category: resolveCategory(inquiry),
+    name: projectName,
+    description: inquiry.message,
+    location: inquiry.location,
+    productionDate: null,
+    contactPerson: inquiry.name,
+    status: "angebot_erstellt",
+    notes: inquiry.timeframe ? `Gewünschter Zeitraum: ${inquiry.timeframe}` : null,
+    folderPath: null,
+  });
+
+  getDb()
+    .prepare(
+      "UPDATE inquiries SET customerId = ?, status = ?, updatedAt = datetime('now') WHERE id = ?",
+    )
+    .run(customer.id, "angebot_erstellt", id);
+
+  return project;
 }

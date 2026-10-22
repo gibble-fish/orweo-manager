@@ -34,6 +34,14 @@ export function Projects() {
       .catch(() => setProjects([]));
   }, []);
 
+  // Auftrag/Projekt löschen (mit Rückfrage). stopPropagation im Button verhindert,
+  // dass gleichzeitig die Zeilen-Navigation ausgelöst wird.
+  const removeProject = async (p: ProjectListRow) => {
+    if (!window.confirm(`Auftrag „${p.name}" (${p.projectNumber}) wirklich löschen?`)) return;
+    await window.orweo.projects.remove(p.id);
+    load(search, filter);
+  };
+
   useEffect(() => {
     window.orweo.customers.list().then(setCustomers).catch(() => setCustomers([]));
     window.orweo.status.list().then(setStatuses).catch(() => setStatuses([]));
@@ -99,6 +107,7 @@ export function Projects() {
               <th className="px-4 py-3 font-normal">Kunde</th>
               <th className="px-4 py-3 font-normal">Projektart</th>
               <th className="px-4 py-3 font-normal">Status</th>
+              <th className="px-4 py-3 text-right font-normal">Aktionen</th>
             </tr>
           </thead>
           <tbody>
@@ -122,11 +131,25 @@ export function Projects() {
                 <td className="px-4 py-3">
                   <StatusBadge status={p.status} statuses={statuses} />
                 </td>
+                <td className="px-4 py-3 text-right whitespace-nowrap">
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      removeProject(p);
+                    }}
+                    className="text-sm underline-offset-2 hover:underline"
+                    style={{ color: "#B87A7A" }}
+                    title="Diesen Auftrag löschen"
+                  >
+                    Löschen
+                  </button>
+                </td>
               </tr>
             ))}
             {projects.length === 0 && (
               <tr>
-                <td colSpan={5} className="px-4 py-6 text-center" style={{ color: "var(--app-text-muted)" }}>
+                <td colSpan={6} className="px-4 py-6 text-center" style={{ color: "var(--app-text-muted)" }}>
                   {search || filter ? "Keine Treffer." : "Noch keine Projekte vorhanden."}
                 </td>
               </tr>
