@@ -1,0 +1,251 @@
+@import "tailwindcss";
+
+/* ===== ORWEO Design System – 1:1 aus der ORWEO-Website übernommen ===== */
+
+@theme inline {
+  /* Colors */
+  --color-near-black: #0b0b0d;
+  --color-off-white: #f3f3f0;
+  --color-mid-grey: #77777a;
+  --color-champagne: #d4c3a1;
+  --color-champagne-light: #e0d4b8;
+  --color-champagne-dark: #b8a882;
+  --color-dark-surface: #111113;
+  --color-dark-card: #161618;
+  --color-dark-border: #222225;
+  --color-warm-dark: #1a1a1c;
+  --color-light-section: #f8f7f4;
+  --color-light-card: #eeeee9;
+
+  /* Fonts */
+  --font-sans: "Montserrat", system-ui, -apple-system, sans-serif;
+
+  /* Breakpoints */
+  --breakpoint-sm: 640px;
+  --breakpoint-md: 768px;
+  --breakpoint-lg: 1024px;
+  --breakpoint-xl: 1280px;
+  --breakpoint-2xl: 1536px;
+}
+
+/*
+ * Montserrat wird lokal gebündelt (kein CDN). Lege die Schriftdatei unter
+ * src/renderer/assets/fonts/ ab und aktiviere den @font-face-Block unten.
+ * Bis dahin greift der System-Sans-Fallback aus --font-sans.
+ *
+ * @font-face {
+ *   font-family: "Montserrat";
+ *   font-style: normal;
+ *   font-weight: 200 600;
+ *   font-display: swap;
+ *   src: url("../assets/fonts/Montserrat-Variable.woff2") format("woff2");
+ * }
+ */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+*:where(:not(html, body, div, section, article, aside, header, main, footer, nav)) {
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+html {
+  /* Basis-Schriftgröße leicht erhöht für bessere Lesbarkeit
+     (wirkt auf alle rem/em-basierten Größen). */
+  font-size: 17px;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-sans);
+  line-height: 1.65;
+  /* Dickere Grundschrift (vorher 300 – wirkte zu dünn/schwer lesbar). */
+  font-weight: 400;
+  background-color: var(--color-near-black);
+  color: var(--color-off-white);
+  overflow: hidden; /* App-Shell scrollt intern, nicht das Fenster */
+}
+
+/* Überschriften bewusst etwas kräftiger als zuvor (war font-light). */
+h1,
+h2,
+h3 {
+  font-weight: 500;
+}
+
+/* Theme-Umschaltung: dunkel (Standard) / hell.
+   Steuert app-weite Flächen- und Textfarben über CSS-Variablen. */
+:root,
+[data-theme="dark"] {
+  --app-bg: #0b0b0d;
+  --app-surface: #111113;
+  --app-card: #161618;
+  --app-border: rgba(212, 195, 161, 0.08);
+  --app-text: #f3f3f0;
+  --app-text-muted: #77777a;
+}
+
+[data-theme="light"] {
+  --app-bg: #f8f7f4;
+  --app-surface: #ffffff;
+  --app-card: #eeeee9;
+  --app-border: rgba(0, 0, 0, 0.08);
+  --app-text: #0b0b0d;
+  --app-text-muted: #77777a;
+}
+
+body {
+  background-color: var(--app-bg);
+  color: var(--app-text);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Selection */
+::selection {
+  background-color: rgba(212, 195, 161, 0.3);
+  color: var(--app-text);
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #333336;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-champagne);
+}
+
+/* Glass card */
+.glass-card {
+  background: rgba(22, 22, 24, 0.7);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(212, 195, 161, 0.08);
+}
+[data-theme="light"] .glass-card {
+  background: rgba(248, 247, 244, 0.9);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+/* Champagne gradient text */
+.gradient-text {
+  background: linear-gradient(135deg, var(--color-off-white) 0%, var(--color-champagne) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+[data-theme="light"] .gradient-text {
+  background: linear-gradient(135deg, #0b0b0d 0%, var(--color-champagne-dark) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+}
+
+/* Buttons */
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 12px 26px;
+  background-color: var(--color-champagne);
+  color: #0b0b0d;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  border: none;
+  border-radius: 2px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+.btn-primary:hover {
+  background-color: var(--color-champagne-light);
+  transform: translateY(-1px);
+}
+
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 12px 26px;
+  border: 1px solid rgba(212, 195, 161, 0.3);
+  color: var(--app-text);
+  background: transparent;
+  font-size: 0.8125rem;
+  font-weight: 400;
+  letter-spacing: 0.05em;
+  border-radius: 2px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+.btn-secondary:hover {
+  border-color: var(--color-champagne);
+  background-color: rgba(212, 195, 161, 0.05);
+}
+
+/* Divider */
+.divider-champagne {
+  height: 1px;
+  background: linear-gradient(90deg, transparent 0%, var(--color-champagne) 50%, transparent 100%);
+  opacity: 0.3;
+}
+
+/* Animations (aus der Website) */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.6s ease-out forwards;
+}
+.animate-fade-in {
+  animation: fadeIn 0.5s ease-out forwards;
+}
+.animate-scale-in {
+  animation: scaleIn 0.4s ease-out forwards;
+}

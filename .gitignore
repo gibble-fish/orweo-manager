@@ -1,0 +1,11 @@
+node_modules/
+dist/
+dist-electron/
+release/
+*.log
+.DS_Store
+# Lokale ORWEO-Datenablage und DB (werden zur Laufzeit erzeugt)
+/data/
+*.sqlite
+*.sqlite-shm
+*.sqlite-wal

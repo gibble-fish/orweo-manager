@@ -1,0 +1,77 @@
+{
+  "name": "orweo-billing",
+  "version": "0.1.0",
+  "description": "ORWEO Abrechnungssystem – lokale Windows-Anwendung",
+  "author": "ORWEO",
+  "private": true,
+  "main": "dist-electron/electron/main.js",
+  "scripts": {
+    "dev": "node scripts/dev.mjs",
+    "build:renderer": "vite build",
+    "build:electron": "tsc -p tsconfig.electron.json",
+    "build": "npm run build:electron && npm run build:renderer",
+    "typecheck": "tsc --noEmit -p tsconfig.json && tsc --noEmit -p tsconfig.electron.json",
+    "start": "npm run build && electron .",
+    "dist": "npm run build && electron-builder",
+    "release": "npm run build && electron-builder --publish always",
+    "postinstall": "node scripts/setup-native.mjs",
+    "setup": "node scripts/setup-native.mjs",
+    "rebuild": "electron-rebuild -f -w better-sqlite3"
+  },
+  "dependencies": {
+    "@react-pdf/renderer": "^4.1.6",
+    "better-sqlite3": "^11.8.1",
+    "electron-updater": "6.8.9",
+    "imapflow": "1.0.198",
+    "mailparser": "3.7.2",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "react-router-dom": "^7.1.3"
+  },
+  "devDependencies": {
+    "@electron/rebuild": "^3.7.1",
+    "@tailwindcss/vite": "^4.0.0",
+    "@types/better-sqlite3": "^7.6.12",
+    "@types/mailparser": "3.9.0",
+    "@types/node": "^22.10.7",
+    "@types/react": "^19.0.7",
+    "@types/react-dom": "^19.0.3",
+    "@vitejs/plugin-react": "^4.3.4",
+    "electron": "^34.0.0",
+    "electron-builder": "^25.1.8",
+    "tailwindcss": "^4.0.0",
+    "typescript": "^5.7.3",
+    "vite": "^6.0.7"
+  },
+  "build": {
+    "appId": "de.orweo.billing",
+    "productName": "ORWEO Abrechnung",
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "dist/**/*",
+      "dist-electron/**/*"
+    ],
+    "extraResources": [
+      "build/ORWEO_Manager.ico"
+    ],
+    "win": {
+      "target": "nsis",
+      "icon": "build/ORWEO_Manager.ico"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "installerIcon": "build/ORWEO_Manager.ico",
+      "uninstallerIcon": "build/ORWEO_Manager.ico"
+    },
+    "publish": [
+      {
+        "provider": "github",
+        "owner": "gibble-fish",
+        "repo": "orweo-manager"
+      }
+    ]
+  }
+}
