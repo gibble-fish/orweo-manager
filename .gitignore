@@ -12,4 +12,8 @@ release/
 
 # Lokale Geheimnisse (z. B. GitHub-Token fürs Release) – NIE committen
 .env.release
+.env.release.*
+.env*
 *.secret
+TOKEN.txt
+*token*.txt
