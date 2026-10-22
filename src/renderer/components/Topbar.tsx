@@ -36,19 +36,27 @@ export function Topbar() {
       className="flex h-24 shrink-0 items-center gap-4 border-b px-6"
       style={{ background: "var(--app-surface)", borderColor: "var(--app-border)" }}
     >
-      <div className="relative w-full max-w-md">
-        <IconSearch
-          width={18}
-          height={18}
-          className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2"
-          style={{ color: "var(--app-text-muted)" }}
-        />
-        <input
-          type="search"
-          placeholder="Suche: Kunden, Projekte, Angebote, Rechnungen …"
-          className="w-full rounded-lg border bg-transparent py-3 pl-12 pr-3 text-base outline-none transition-colors focus:border-[color:var(--color-champagne)]"
-          style={{ borderColor: "var(--app-border)", color: "var(--app-text)" }}
-        />
+      <div className="w-full max-w-md">
+        <span
+          className="mb-1 block text-xs uppercase tracking-[0.15em]"
+          style={{ color: "var(--color-champagne)" }}
+        >
+          Suche
+        </span>
+        <div className="relative">
+          <IconSearch
+            width={18}
+            height={18}
+            className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2"
+            style={{ color: "var(--color-champagne)" }}
+          />
+          <input
+            type="search"
+            placeholder="Kunden, Projekte, Angebote, Rechnungen …"
+            className="w-full rounded-lg border bg-transparent py-3 pl-12 pr-3 text-base outline-none transition-colors focus:border-[color:var(--color-champagne)]"
+            style={{ borderColor: "rgba(212,195,161,0.45)", color: "var(--app-text)" }}
+          />
+        </div>
       </div>
 
       <div className="ml-auto flex items-center gap-2">
