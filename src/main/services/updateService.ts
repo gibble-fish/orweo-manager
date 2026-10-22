@@ -10,14 +10,21 @@
  * userData und bleibt bei jedem Update erhalten.
  */
 import { app, BrowserWindow } from "electron";
-import pkg from "electron-updater";
+import * as electronUpdater from "electron-updater";
 // Relativer Pfad statt @shared-Alias: IPC_CHANNELS ist ein LAUFZEIT-Wert.
 // tsc löst Pfad-Aliase nicht in require() auf, sonst scheitert der Import zur Laufzeit.
 import { IPC_CHANNELS } from "../../shared/ipc";
 import type { UpdateState } from "../../shared/ipc";
 
-// electron-updater ist CommonJS; autoUpdater wird aus dem Default-Export gelöst.
-const { autoUpdater } = pkg;
+/**
+ * electron-updater ist ein CommonJS-Modul. Je nach Build liegt `autoUpdater`
+ * entweder direkt auf dem Modul oder unter `.default`. Wir greifen defensiv auf
+ * beide Varianten zu, damit der Import in der gepackten App nicht fehlschlägt.
+ */
+const updaterModule =
+  (electronUpdater as unknown as { default?: typeof electronUpdater }).default ??
+  electronUpdater;
+const autoUpdater = updaterModule.autoUpdater;
 
 let getWindow: () => BrowserWindow | null = () => null;
 
@@ -33,9 +40,13 @@ function emit(patch: Partial<UpdateState>): void {
   win?.webContents.send(IPC_CHANNELS.update.getState, state);
 }
 
-/** True, sobald Auto-Update grundsätzlich möglich ist (gepackt). */
+/**
+ * True, sobald Auto-Update grundsätzlich möglich ist: nur im gepackten Build
+ * UND wenn das electron-updater-Modul korrekt geladen wurde. Der zweite Teil
+ * verhindert einen Absturz, falls das Modul in einer Umgebung nicht verfügbar ist.
+ */
 function updaterAvailable(): boolean {
-  return app.isPackaged;
+  return app.isPackaged && !!autoUpdater;
 }
 
 /**
