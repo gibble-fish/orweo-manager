@@ -118,7 +118,7 @@ export function ProjectEditorModal({
         </>
       }
     >
-      <div className="grid max-h-[60vh] gap-4 overflow-y-auto pr-1">
+      <div className="grid gap-4">
         <label className="block">
           <span className="mb-1 block text-xs uppercase tracking-wider" style={labelStyle}>
             Kunde *

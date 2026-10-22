@@ -39,12 +39,18 @@ export function Modal({
         if (e.target === e.currentTarget) onClose();
       }}
     >
+      {/*
+        Das Modal wird vertikal und horizontal zentriert. Es wird nie höher als
+        der Bildschirm (max-h-[90vh]); bei viel Inhalt scrollt der mittlere
+        Bereich intern, während Kopf und Fußzeile sichtbar bleiben. So erscheint
+        das Fenster immer mittig und wird oben nicht abgeschnitten.
+      */}
       <div
-        className={`glass-card w-full ${maxWidthClass} rounded-xl animate-scale-in`}
+        className={`glass-card flex max-h-[90vh] w-full flex-col ${maxWidthClass} rounded-xl animate-scale-in`}
         style={{ background: "var(--app-card)", borderColor: "var(--app-border)" }}
       >
         <div
-          className="flex items-center justify-between border-b px-6 py-4"
+          className="flex shrink-0 items-center justify-between border-b px-6 py-4"
           style={{ borderColor: "var(--app-border)" }}
         >
           <h3 className="text-lg font-light tracking-wide">{title}</h3>
@@ -59,11 +65,11 @@ export function Modal({
           </button>
         </div>
 
-        <div className="px-6 py-5">{children}</div>
+        <div className="flex-1 overflow-y-auto px-6 py-5">{children}</div>
 
         {footer && (
           <div
-            className="flex items-center justify-end gap-2 border-t px-6 py-4"
+            className="flex shrink-0 items-center justify-end gap-2 border-t px-6 py-4"
             style={{ borderColor: "var(--app-border)" }}
           >
             {footer}

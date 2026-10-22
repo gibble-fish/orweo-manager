@@ -119,7 +119,7 @@ export function InquiryEditorModal({ open, inquiry, statuses, onClose, onSaved }
         </>
       }
     >
-      <div className="grid max-h-[72vh] gap-4 overflow-y-auto pr-1">
+      <div className="grid gap-4">
         <div className="grid grid-cols-2 gap-4">
           <label className="block">
             <span className="mb-1 block text-sm uppercase tracking-wider" style={labelStyle}>

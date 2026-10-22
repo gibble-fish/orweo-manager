@@ -139,7 +139,7 @@ export function CustomerEditorModal({ open, customer, onClose, onSaved }: Props)
         </>
       }
     >
-      <div className="grid max-h-[60vh] gap-4 overflow-y-auto pr-1">
+      <div className="grid gap-4">
         <Field label="Firma" value={draft.company ?? ""} onChange={(v) => set({ company: v })} />
 
         <div className="grid grid-cols-2 gap-4">
